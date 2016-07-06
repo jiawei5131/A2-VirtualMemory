@@ -1,0 +1,3 @@
+https://github.com/raypeng/CSC369/blob/master/a2/pagetable.c
+https://github.com/RamaneekGill/CSC369-Winter-2014/blob/master/a2/pagetable.c
+https://github.com/akshayjain1996/VirtualMemory-CSC369/blob/master/pagetable.c
