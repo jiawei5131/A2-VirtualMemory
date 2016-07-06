@@ -18,7 +18,7 @@ struct QNode{
 	struct QNode *next;
 };
 
-struct node *rm_frame;
+struct node *head;
 struct node *tail;
 bool *r_bit;
 /* Page to evict is chosen using the accurate LRU algorithm.
@@ -27,14 +27,14 @@ bool *r_bit;
  */
 
 int lru_evict() {
-	int frameNum = rm_frame -> frame;
-	if (rm_frame=tail){
+	int frame = head -> frame;
+	if (head = tail){
 		tail = NULL;
 	}
-	struct node *new_rm_frame = rm_frame -> next;
-	free (rm_frame);
-	rm_frame = new_rm_frame;
-	return frameNum;
+	struct node *new_head = head -> next;
+	free (head);
+	head = new_head;
+	return frame;
 }
 
 /* This function is called on each access to a page to update any information
@@ -45,9 +45,43 @@ void lru_ref(pgtbl_entry_t *p) {
 	int frame = p->frame >> PAGE_SHIFT;
 	if (r_bit[frame] == 0){
 		r_bit[frame] == 1;
-		QNode *new = malloc(sizeof(QNode));
+		QNode *new = malloc(sizeof(QNode)); //create a space to hold the frame
 		new -> frame = frame;
 		new -> next = NULL;
+		
+		if (tail == NULL){ // if list is empty
+			tail = new;
+			head = tail
+		}else{
+			tail -> next = new;
+			tail = new;
+		}
+	}else{
+		QNode *new = malloc(sizeof(QNode)); //put the new node at the end of the list
+		new -> frame = frame;
+		new -> next = null;
+		tail -> next = new;
+		tail = new;
+		
+		struct node *temp = head;
+		struct node *temp2 = NULL;
+		while (temp -> frame != frame){
+			if (temp->next != NULL){
+				temp = temp -> next;
+			}else{
+				break;
+			}
+		}
+		
+		if (temp -> frame == frame);{
+			// case: frame found
+			temp2 = temp -> next;
+			temp -> next = temp2 -> next;
+			free(temp2);
+		}else(temp->next == NULL ){
+			// case: frame not found
+		}
+		}
 		
 		
 	}	

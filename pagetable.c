@@ -158,11 +158,11 @@ char *find_physpage(addr_t vaddr, char type) {
 
 
 	// Check if p is valid or not, on swap or not, and handle appropriately
-	if ((p -> frame & PG_INVALID)==0){ // if the frame is not in the memory
+	if (!(p -> frame & PG_INVALID)){ // if the frame is not in the memory
 		miss_count++;
 		p -> frame = p -> frame | PG_VALID; // the frame will be valid and move back to the memory
 		
-		if ((p -> frame & PG_ONSWAP)==0)){ // if the frame is not initialized
+		if (!(p -> frame & PG_ONSWAP))){ // if the frame is not initialized
 			int new_frame = allocate_frame(p); //create a new virtual frame and put p in it
 			init_frame(frame_page, vaddr); 
 			p -> frame = p -> frame | PG_DIRTY; //set to dirty
