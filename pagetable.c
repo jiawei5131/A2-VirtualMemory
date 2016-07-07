@@ -42,7 +42,7 @@ int allocate_frame(pgtbl_entry_t *p) {
 		// IMPLEMENTATION NEEDED
 		pgtbl_entry_t* victim = coremap[frame].pte; //get virtim frame
 		if (victim -> frame & PG_DIRTY){
-			victim- > frame &= PG_INVALID;
+			victim- > frame &= ~PG_VALID;
 			virtim -> frame |= PG_ONSWAP;
 			
 			evict_dirty_count++;//if the page frame is dirty, mark it onswap and write to swap
@@ -52,7 +52,7 @@ int allocate_frame(pgtbl_entry_t *p) {
 			victim -> swap_off = new_swap_off;
 		
 		}else{
-			victim- > frame &= PG_INVALID;
+			victim- > frame &= ~PG_VALID;
 			virtim -> frame |= PG_ONSWAP;
 			evict_clean_count++;
 		}
