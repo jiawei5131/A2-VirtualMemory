@@ -206,7 +206,7 @@ char *find_physpage(addr_t vaddr, char type) {
 
 	// Make sure that p is marked valid and referenced. Also mark it
 	// dirty if the access type indicates that the page will be written to.
-	if (type == "M" || type == "S"){
+	if (type == 'S' || type == 'M'){
 		p->frame = p->frame | PG_DIRTY;
 	}
 	
