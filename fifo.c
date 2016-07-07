@@ -20,7 +20,7 @@ extern struct frame *coremap;
 int fifo_start;
 int fifo_evict() {
 	int frame = fifo_start;
-	fifo_start++
+	fifo_start++;
 	return frame;
 }
 
