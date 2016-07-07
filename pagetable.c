@@ -46,7 +46,7 @@ int allocate_frame(pgtbl_entry_t *p) {
 
 		if (victim->frame & PG_DIRTY){	// the page frame is not saved
 			// mark it onswap and invalid for swap out memory, and write to swap
-			victim- > frame &= ~PG_VALID;
+			victim->frame &= ~PG_VALID;
 			
 			evict_dirty_count++;
 
@@ -56,9 +56,9 @@ int allocate_frame(pgtbl_entry_t *p) {
 			victim->swap_off = new_swap_off;
 
 			// Set the page ONSWAP because it has been swapped out.
-			virtim->frame |= PG_ONSWAP;	
+			victim->frame |= PG_ONSWAP;	
 			// Set the page to NOT DIRTY since it now has a backup
-			virtim->frame &= ~PG_DIRTY;
+			victim->frame &= ~PG_DIRTY;
 		
 		}else{	// the page frame is saved
 			victim->frame &= ~PG_VALID;
@@ -181,7 +181,7 @@ char *find_physpage(addr_t vaddr, char type) {
 		// Allocate a frame in the memory for 'p'
 		int frame_page = allocate_frame(p); 
 
-		if (!(p->frame & PG_ONSWAP))){ // The page not in swap space
+		if (!(p->frame & PG_ONSWAP)){ // The page not in swap space
 			init_frame(frame_page, vaddr); 
 
 			// The page is new in memory and hence marked as modified
