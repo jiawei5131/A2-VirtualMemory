@@ -46,7 +46,6 @@ int allocate_frame(pgtbl_entry_t *p) {
 
 		if (victim->frame & PG_DIRTY){	// the page frame is not saved
 			// mark it onswap and invalid for swap out memory, and write to swap
-			victim->frame &= ~PG_VALID;
 			evict_dirty_count++;
 
 			// create a new swap_off page
@@ -54,6 +53,7 @@ int allocate_frame(pgtbl_entry_t *p) {
 			new_swap_off = swap_pageout(frame, victim->swap_off);
 			victim->swap_off = new_swap_off;
 
+			victim->frame &= ~PG_VALID;
 			// Set the page ONSWAP because it has been swapped out.
 			victim->frame |= PG_ONSWAP;	
 			// Set the page to NOT DIRTY since it now has a backup
@@ -61,6 +61,7 @@ int allocate_frame(pgtbl_entry_t *p) {
 		
 		}else{	// the page frame is saved
 			victim->frame &= ~PG_VALID;
+			victim->frame |= PG_ONSWAP;	
 			evict_clean_count++;
 		}
 
@@ -165,16 +166,13 @@ char *find_physpage(addr_t vaddr, char type) {
 	}
 
 	// Get a pointer to the 2nd-level page table
-	pgtbl_entry_t *pgtbl = (pgtbl_entry_t *)(pgdir[idx].pde & PAGE_MASK);
+	pgtbl_entry_t *pgtbl = (pgtbl_entry_t *)((pgdir[idx].pde) & PAGE_MASK);
 	// Get the index of the page table entry and initialize 'p'
-	idx = PGTBL_INDEX(vaddr);
-	p = &pgtbl[idx];
+	p = &pgtbl[PGTBL_INDEX(vaddr)];
 
 	// Check if 'p' is invalid
 	if (!(p->frame & PG_VALID)){ // The page is not in the memory
 		miss_count++;
-		// the page will be valid and move to the memory
-		p->frame = p->frame | PG_VALID; 
 
 		if (!(p->frame & PG_ONSWAP)){ // The page is not onswap
 			// Allocate a frame in the memory for 'p'
@@ -189,13 +187,14 @@ char *find_physpage(addr_t vaddr, char type) {
 
 		}else{	// The page was in space and been moved to swap space
 			int frame_page = allocate_frame(p); 
+			// Store PFN
+			p->frame = frame_page << PAGE_SHIFT;
+
 			// Swap the page back to the memory
-			if(swap_pagein(p->frame, p->swap_off) != 0){
+			if(swap_pagein(p->frame >> PAGE_SHIFT, p->swap_off) != 0){
 				// swap_pagein not successful
 			} 
-			
-			// Store PFN
-			p->frame = frame_page << PAGE_SHIFT; 
+			 
 			p->frame &= ~PG_ONSWAP; 
 			// The page has just been swapped in, hence not modified.
 			p->frame &= ~PG_DIRTY;	
@@ -207,13 +206,8 @@ char *find_physpage(addr_t vaddr, char type) {
 
 	// Make sure that p is marked valid and referenced. Also mark it
 	// dirty if the access type indicates that the page will be written to.
-<<<<<<< HEAD
 	if (type == 'M' || type == 'S'){
 		p->frame |= PG_DIRTY;
-=======
-	if (type == 'S' || type == 'M'){
-		p->frame = p->frame | PG_DIRTY;
->>>>>>> upstream/master
 	}
 	
 	// The page is in the memory and referenced.
