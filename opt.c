@@ -17,8 +17,10 @@ extern struct frame *coremap;
  * Returns the page frame number (which is also the index in the coremap)
  * for the page that is to be evicted.
  */
+ 
+
 int opt_evict() {
-	
+
 	return 0;
 }
 

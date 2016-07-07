@@ -17,9 +17,11 @@ extern struct frame *coremap;
  * Returns the page frame number (which is also the index in the coremap)
  * for the page that is to be evicted.
  */
+int fifo_start;
 int fifo_evict() {
-	
-	return 0;
+	int frame = fifo_start;
+	fifo_start++
+	return frame;
 }
 
 /* This function is called on each access to a page to update any information
@@ -27,7 +29,9 @@ int fifo_evict() {
  * Input: The page table entry for the page that is being accessed.
  */
 void fifo_ref(pgtbl_entry_t *p) {
-
+	if(fifo_start >= memsize){
+		fifo_start = 0;
+	}
 	return;
 }
 
@@ -35,5 +39,6 @@ void fifo_ref(pgtbl_entry_t *p) {
  * replacement algorithm 
  */
 void fifo_init() {
+	fifo_start = 0;
 }
 
