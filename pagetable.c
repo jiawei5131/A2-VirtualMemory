@@ -40,7 +40,10 @@ int allocate_frame(pgtbl_entry_t *p) {
 		// All frames were in use, so victim frame must hold some page
 		// Write victim page to swap, if needed, and update pagetable
 		// IMPLEMENTATION NEEDED
-		pgtbl_entry_t* victim = coremap[frame].pte; //get virtim frame
+
+		//get the victim frame
+		pgtbl_entry_t* victim = coremap[frame].pte; 
+
 		if (victim -> frame & PG_DIRTY){
 			virtim -> frame = victim -> frame | PG_ONSWAP //if the page frame is dirty, mark it onswap and write to swap
 			int new_swap_off; //create a new swap_off page
