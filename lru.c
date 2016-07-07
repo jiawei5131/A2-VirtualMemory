@@ -33,7 +33,7 @@ int lru_evict() {
 	int oldest;
 	int i = 0;
 	int compare = 0; 
-	 While(i < memsize){
+	 while(i < memsize){
 		if (coremap[i].pte -> stamp < compare){
 			oldest = i;
 			compare = coremap[i].pte -> stamp;
@@ -48,8 +48,9 @@ int lru_evict() {
  * Input: The page table entry for the page that is being accessed.
  */
 void lru_ref(pgtbl_entry_t *p) {
+	int i;
 	for (i = 0; i < memsize; i++){
-		int counter = coremap[i].pte -> stamp;
+	counter = coremap[i].pte -> stamp;
 	}
 	// int frame = p->frame >> PAGE_SHIFT;
 	// if (head = NULL){
@@ -90,7 +91,7 @@ void lru_ref(pgtbl_entry_t *p) {
 		
 	// }	
 	// return;
-// }
+}
 
 
 /* Initialize any data structures needed for this 
