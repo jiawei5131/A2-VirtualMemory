@@ -47,7 +47,6 @@ int allocate_frame(pgtbl_entry_t *p) {
 		if (victim->frame & PG_DIRTY){	// the page frame is not saved
 			// mark it onswap and invalid for swap out memory, and write to swap
 			victim->frame &= ~PG_VALID;
-			
 			evict_dirty_count++;
 
 			// create a new swap_off page
@@ -171,29 +170,31 @@ char *find_physpage(addr_t vaddr, char type) {
 	idx = PGTBL_INDEX(vaddr);
 	p = &pgtbl[idx];
 
-
-	// Check if 'p' is valid
+	// Check if 'p' is invalid
 	if (!(p->frame & PG_VALID)){ // The page is not in the memory
 		miss_count++;
 		// the page will be valid and move to the memory
 		p->frame = p->frame | PG_VALID; 
-		
-		// Allocate a frame in the memory for 'p'
-		int frame_page = allocate_frame(p); 
 
-		if (!(p->frame & PG_ONSWAP)){ // The page not in swap space
+		if (!(p->frame & PG_ONSWAP)){ // The page is not onswap
+			// Allocate a frame in the memory for 'p'
+			int frame_page = allocate_frame(p); 
+
+			// Store PFN
+    		p->frame = frame_page << PAGE_SHIFT;
+
 			init_frame(frame_page, vaddr); 
-
 			// The page is new in memory and hence marked as modified
-			p->frame = p->frame | PG_DIRTY; 
+			p->frame |= PG_DIRTY;
 
 		}else{	// The page was in space and been moved to swap space
+			int frame_page = allocate_frame(p); 
 			// Swap the page back to the memory
 			if(swap_pagein(p->frame, p->swap_off) != 0){
 				// swap_pagein not successful
 			} 
 			
-			// Store the frame page into the field
+			// Store PFN
 			p->frame = frame_page << PAGE_SHIFT; 
 			p->frame &= ~PG_ONSWAP; 
 			// The page has just been swapped in, hence not modified.
@@ -206,13 +207,13 @@ char *find_physpage(addr_t vaddr, char type) {
 
 	// Make sure that p is marked valid and referenced. Also mark it
 	// dirty if the access type indicates that the page will be written to.
-	if (type == "M" || type == "S"){
-		p->frame = p->frame | PG_DIRTY;
+	if (type == 'M' || type == 'S'){
+		p->frame |= PG_DIRTY;
 	}
 	
 	// The page is in the memory and referenced.
-	p->frame = p->frame | PG_VALID;
-	p->frame = p->frame | PG_REF;
+	p->frame |= PG_VALID;
+	p->frame |= PG_REF;
 	ref_count++;
 
 
