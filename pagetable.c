@@ -44,11 +44,12 @@ int allocate_frame(pgtbl_entry_t *p) {
 		//get the victim frame
 		pgtbl_entry_t* victim = coremap[frame].pte; 
 
-		if (victim -> frame & PG_DIRTY){
+		if (victim -> frame & PG_DIRTY){	// if the page frame is dirty
 			victim- > frame &= PG_INVALID;
 			virtim -> frame |= PG_ONSWAP;
 			
-			evict_dirty_count++;//if the page frame is dirty, mark it onswap and write to swap
+			//if the page frame is dirty, mark it onswap and write to swap
+			evict_dirty_count++;
 			int new_swap_off; //create a new swap_off page
 			new_swap_off = swap_pageout(frame, victim -> swap_off);
 			
