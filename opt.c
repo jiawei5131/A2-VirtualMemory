@@ -20,7 +20,7 @@ extern struct frame *coremap;
  
 
 int opt_evict() {
-	
+
 	return 0;
 }
 

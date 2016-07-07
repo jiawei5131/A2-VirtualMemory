@@ -42,17 +42,18 @@ int allocate_frame(pgtbl_entry_t *p) {
 		// IMPLEMENTATION NEEDED
 		pgtbl_entry_t* victim = coremap[frame].pte; //get virtim frame
 		if (victim -> frame & PG_DIRTY){
-			virtim -> frame = victim -> frame | PG_ONSWAP //if the page frame is dirty, mark it onswap and write to swap
+			victim- > frame &= PG_INVALID;
+			virtim -> frame |= PG_ONSWAP;
+			
+			evict_dirty_count++;//if the page frame is dirty, mark it onswap and write to swap
 			int new_swap_off; //create a new swap_off page
 			new_swap_off = swap_pageout(frame, victim -> swap_off);
-			assert(new_swap_off_page != INVALID_SWAP);
-			victim -> swap_off = new_swap_off;	
-			victim -> frame &= PG_VALID;
-			victim -> frame = victim -> frame | PG_ONSWAP;
-			evict_dirty_count++;
+			
+			victim -> swap_off = new_swap_off;
 		
 		}else{
-			victim->frame &= ~PG_VALID;
+			victim- > frame &= PG_INVALID;
+			virtim -> frame |= PG_ONSWAP;
 			evict_clean_count++;
 		}
 	}
@@ -144,6 +145,7 @@ void init_frame(int frame, addr_t vaddr) {
  * Counters for hit, miss and reference events should be incremented in
  * this function.
  */
+// REWRITE, MIGHTBE SIMILAR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
 char *find_physpage(addr_t vaddr, char type) {
 	pgtbl_entry_t *p=NULL; // pointer to the full page table entry for vaddr
 	unsigned idx = PGDIR_INDEX(vaddr); // get index into page directory
