@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <stdlib.h>
+#include <string.h>
 #include "pagetable.h"
 
 #include <stdbool.h>
@@ -23,14 +24,14 @@ extern struct frame *coremap;
 int timeline;	// Timeline that moves forward once any frame is referenced.
 int* records;	// Record the last time when the frame is accessed.
 
-int lru_evict() {
+int lru_evict(){
 	// variable define
 	int minimum = records[0];
 	int frame = 0;	// frame number of the least used frame
 	int i;
 
 	// Loop the whole array to find out the least used frame
-	for(i = 1; i < memsize; i ++)){
+	for(i = 1; i < memsize; i ++){
 		if (records[i] < minimum){
 			frame = i;
 		}
