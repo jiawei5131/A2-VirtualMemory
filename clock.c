@@ -25,21 +25,19 @@ int hand;
 
 int clock_evict() {
 	
-	// while (hand < memsize){
-		// if (coremap[hand].pte -> frame & PG_REF == 1){
-			// coremap[hand].pte -> frame & PG_REF == 0;
-		// }else{
-			// coremap[hand].pte -> frame & PG_REF == 1;
-			// return hand;
-		// }
-		// hand++;
-	// }
-	while(1);
-	if( !(coremap[hand].pte->frame & PG_REF)){
-		return hand;
-	}else if(coremap[hand].pte->frame & PG_REF){
-		coremap[hand].pte -> frame &= ~PG_REF ;
-		hand = (hand+1)% memsize;
+	while(1){
+		if( !(coremap[hand].pte->frame & PG_REF)){ // reference bit not set(0)
+			// increment the hand
+			hand = (hand + 1) % memsize;
+
+			// make sure the hand is a positive number
+			return (hand - 1 + memsize) % memsize;
+		}else if(coremap[hand].pte->frame & PG_REF){ // reference bit set(1)
+			coremap[hand].pte -> frame &= ~PG_REF ;
+			
+			// increment the hand
+			hand = (hand + 1) % memsize;
+		}
 	}
 }
 
