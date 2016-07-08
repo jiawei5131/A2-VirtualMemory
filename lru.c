@@ -62,7 +62,7 @@ void lru_init() {
 	records = malloc(memsize * sizeof(int));
 
 	// Zero the array
-	memset(records, 0, sizeof records);
+	memset(records, 0, memsize * sizeof(int));
 
 	timeline = 0;
 	return;
