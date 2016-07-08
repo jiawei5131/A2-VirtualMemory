@@ -48,7 +48,7 @@ void lru_ref(pgtbl_entry_t *p) {
 	timeline ++;
 
 	// Record the time as p is being referenced
-	records[p->frame] = timeline;
+	records[p->frame >> PAGE_SHIFT] = timeline;
 
 	return;
 }
@@ -58,7 +58,7 @@ void lru_ref(pgtbl_entry_t *p) {
  * replacement algorithm 
  */
 void lru_init() {
-	// Allocate space for records
+	// Allocate space for the array
 	records = malloc(memsize * sizeof(int));
 
 	// Zero the array
